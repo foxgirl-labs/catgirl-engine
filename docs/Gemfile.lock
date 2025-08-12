@@ -48,16 +48,6 @@ GEM
     faraday-retry (2.2.1)
       faraday (~> 2.0)
     ffi (1.17.0)
-    ffi (1.17.0-aarch64-linux-gnu)
-    ffi (1.17.0-aarch64-linux-musl)
-    ffi (1.17.0-arm-linux-gnu)
-    ffi (1.17.0-arm-linux-musl)
-    ffi (1.17.0-arm64-darwin)
-    ffi (1.17.0-x86-linux-gnu)
-    ffi (1.17.0-x86-linux-musl)
-    ffi (1.17.0-x86_64-darwin)
-    ffi (1.17.0-x86_64-linux-gnu)
-    ffi (1.17.0-x86_64-linux-musl)
     forwardable-extended (2.6.0)
     gemoji (4.1.0)
     github-pages (232)
@@ -250,18 +240,6 @@ GEM
     nokogiri (1.17.1)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
-    nokogiri (1.17.1-aarch64-linux)
-      racc (~> 1.4)
-    nokogiri (1.17.1-arm-linux)
-      racc (~> 1.4)
-    nokogiri (1.17.1-arm64-darwin)
-      racc (~> 1.4)
-    nokogiri (1.17.1-x86-linux)
-      racc (~> 1.4)
-    nokogiri (1.17.1-x86_64-darwin)
-      racc (~> 1.4)
-    nokogiri (1.17.1-x86_64-linux)
-      racc (~> 1.4)
     octokit (4.25.1)
       faraday (>= 1, < 3)
       sawyer (~> 0.9)
@@ -337,7 +315,7 @@ DEPENDENCIES
   ostruct (~> 0.6.1)
 
 RUBY VERSION
-   ruby 3.3.5p100
+   ruby 3.4.5p51
 
 BUNDLED WITH
    2.5.23
