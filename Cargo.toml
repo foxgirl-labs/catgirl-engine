@@ -1,138 +1,322 @@
-# Disabled until issues with compiling with no_mangle resolved on WASM
-# cargo-features = ["edition2024"]
+#	-----------------------------------------------------------------------------
+#	Tab Size Equivalent To 2 Spaces
+#	
+#	
+#	See more keys and their definitions at:
+#	*	https://doc.rust-lang.org/cargo/reference/manifest.html
+#	*	https://doc.rust-lang.org/reference/linkage.html
+#	
+#		While TOML now supports newlines on inline tables, cargo doesn't appear to
+#	support it yet. Will revisit formatting this file to fit within the 80
+#	column boundary at a future point
+#	
+#	See this pull request implementing inline table support:
+#	*	https://github.com/toml-lang/toml/pull/904
+#	
+#		Also, note that we need to fix the below scripts to use a proper TOML
+#	parser/writer so we can work with formatting the file without having to
+#	update these files:
+#	*	./version.sh
+#	*	./install-tools.sh
+#	*	./android/app/build.gradle
+#	*	./.build-scripts/install/rust-wasm.sh
+#	*	./.github/workflows/build-android.yml
+#	*	./.github/workflows/build-linux-gnu-x86_64-appimage.yml
+#	*	./.github/workflows/build-linux-musl-x86_64.yml
+#	*	./.github/workflows/build-wasm32-unknown-unknown.yml
+#	*	./.github/workflows/build-windows-gnu-x86_64.yml
+#	*	./.github/workflows/publish-to-repositories.yml
+#	
+#		Note: The above files may be broken right now cause of reformatting the
+#	TOML. We will need to fix that once we get the time to properly go through
+#	the sources and reformat everything. The not-broken Cargo.toml file can be
+#	located at commit ef6b462ebb52defb73a36798ad1c835c77e2b5f7
+#	-----------------------------------------------------------------------------
 
+
+#	-----------------------------------------------------------------------------
+#	Disabled until issues with compiling with no_mangle resolved on WASM
+#	-----------------------------------------------------------------------------
+#cargo-features								=	[
+#	"edition2024"
+#]
+
+
+#	-----------------------------------------------------------------------------
+#	Crate Metadata
+#	
+#	https://semver.org (Do not use 1.0.0 until first production release)
+#	-----------------------------------------------------------------------------
 [package]
-name = "catgirl-engine"
-description = "A game engine for cool moddability and procedurally generated data"
-license = "Zlib"
-version = "0.14.44"  # https://semver.org (Do not use 1.0.0 until first production release)
-keywords = ["catgirl", "engine", "gamedev", "game"]
-categories = ["game-engines"]
-repository = "https://github.com/foxgirl-labs/catgirl-engine.git"
-documentation = "https://docs.rs/catgirl-engine"
-homepage = "https://github.com/foxgirl-labs/catgirl-engine"
-readme = "ReadMe.md"
-authors = ["Alexis <@alexis@fearness.org>"]  # <@user@server> is a Fedi Address
-edition = "2021"
-resolver = "2"
+name													=	"catgirl-engine"
+description										=	"A game engine for cool moddability and procedurally generated data"
+license												=	"Zlib"
+version												=	"0.14.44"
+keywords											=	["catgirl", "engine", "gamedev", "game"]
+categories										=	["game-engines"]
+repository										=	"https://github.com/foxgirl-labs/catgirl-engine.git"
+documentation									=	"https://docs.rs/catgirl-engine"
+homepage											=	"https://github.com/foxgirl-labs/catgirl-engine"
+readme												=	"ReadMe.md"
+authors												=	[
+	"Alexis <@alexis@fearness.org>"	#	<@user@server> is a Fedi Address
+]
+edition												=	"2021"
+resolver											=	"2"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+#	-----------------------------------------------------------------------------
+#	Library Build Options
+#	-----------------------------------------------------------------------------
 [lib]
-name = "main"
-path = "src/lib.rs"
-crate-type = ["cdylib", "rlib"]  # cdylib - C Compatible Lib, rlib - Rust Lib
+name													=	"main"
+path													=	"src/lib.rs"
+crate-type										=	[
+	"staticlib",	#	staticlib		-	System Static Libraries (For Other Languages)
+	"rlib",				#	rlib				-	Rust Static Library w/ Meta For Static Linking
+	"cdylib",			#	cdylib			-	C/C++ Compatible Dynamic Library
+#	"dylib",			#	dylib				-	Rust Dynamic Library w/ Unstable ABI
+#	"lib",				#	lib					-	Compiler Auto-selected Rust Library (Varies)
+#	"bin",				#	bin					-	Native Executable
+#	"proc-macro"	#	proc-macro	-	Compiler Treats Output As Procedural Macro
+]
 
-# Optimize for faster build times
+
+#	-----------------------------------------------------------------------------
+#	Optimize for faster build times
+#	-----------------------------------------------------------------------------
 [profile.dev]
-lto = false
-debug = true
-opt-level = 0
-incremental = true
-codegen-units = 256
+lto														=	false
+debug													=	true
+opt-level											=	0
+incremental										=	true
+codegen-units									=	256
 
-# Optimize for speed and remove debug information for size
+
+#	-----------------------------------------------------------------------------
+#	Optimize for speed and remove debug information for size
+#	
+#		Setting debug to false significantly reduces code size
+#	(last test was 286 MB to 13 MB)
+#	-----------------------------------------------------------------------------
 [profile.release]
-lto = true
-debug = false  # Setting to false significantly reduces code size (last test was 286 MB to 13 MB)
-opt-level = 3
-incremental = false
+lto														=	true
+debug													=	false
+opt-level											=	3
+incremental										=	false
 
+
+#	-----------------------------------------------------------------------------
+#	...
+#	-----------------------------------------------------------------------------
 [features]
-default = ["client", "server", "logging-subscriber"]
-client = ["dep:client"]
-server = ["dep:server"]
-logging-subscriber = []
-appimage = ["dep:fs_extra", "utils/appimage"]
-embed-assets = ["macros/embed-assets"]
+default												=	[
+	"client",
+	"server",
+	"logging-subscriber"
+]
+client												=	[
+	"dep:client"
+]
+server												=	[
+	"dep:server"
+]
+logging-subscriber						=	[
+	
+]
+appimage											=	[
+	"dep:fs_extra",
+	"utils/appimage"
+]
+embed-assets									=	[
+	"macros/embed-assets"
+]
 
-# Used for customizing building of docs.rs binary
+
+#	-----------------------------------------------------------------------------
+#	Used for customizing building of docs.rs binary
+#	-----------------------------------------------------------------------------
 [package.metadata.docs.rs]
-features = ["default"]
-rustdoc-args = ["--document-private-items", "--default-theme=ayu"]
-default-target = "x86_64-unknown-linux-gnu"
-targets = ["x86_64-unknown-linux-gnu", "x86_64-pc-windows-gnu", "wasm32-unknown-unknown",
-            "aarch64-linux-android", "armv7-linux-androideabi",
-            "i686-linux-android", "x86_64-linux-android"]
+features											=	[
+	"default"
+]
+rustdoc-args									=	[
+	"--document-private-items",
+	"--default-theme=ayu"
+]
+default-target								=	"x86_64-unknown-linux-gnu"
+targets												=	[
+	"x86_64-unknown-linux-gnu",
+	"x86_64-pc-windows-gnu",
+	"wasm32-unknown-unknown",
+	"aarch64-linux-android",
+	"armv7-linux-androideabi",
+	"i686-linux-android",
+	"x86_64-linux-android"
+]
 
+
+#	-----------------------------------------------------------------------------
+#	...
+#	-----------------------------------------------------------------------------
 [workspace]
-members = [
-    "common",
-    "macros",
-    "utils",
-    "client",
-    "server"
+members												=	[
+	"common",
+	"macros",
+	"utils",
+	"client",
+	"server"
 ]
 
+
+#	-----------------------------------------------------------------------------
+#	...
+#	-----------------------------------------------------------------------------
 [lints.clippy]
-missing_docs_in_private_items = "warn"
-pedantic = { level = "warn", priority = -1 }
-similar_names = "allow"
-module_name_repetitions = "allow"
-needless_pass_by_value = "allow"
-too_many_lines = "allow"
-unused_self = "allow"
-struct_excessive_bools = "allow"
+missing_docs_in_private_items	=	"warn"
+pedantic											=	{ level="warn", priority=-1 }
+similar_names									=	"allow"
+module_name_repetitions				=	"allow"
+needless_pass_by_value				=	"allow"
+too_many_lines								=	"allow"
+unused_self										=	"allow"
+struct_excessive_bools				=	"allow"
 
+
+#	-----------------------------------------------------------------------------
+#	Cargo AppImage Build Flags
+#	
+#	Optional Args
+#	*	"-u",
+#		"gh-releases-zsync|foxgirl-labs|catgirl-engine|latest|*.zsync",
+#		"--runtime-file",
+#		"$PROJECT_ROOT/.tools/runtime-x86_64"
+#	-----------------------------------------------------------------------------
 [package.metadata.appimage]
-assets = ["target/binding", "target/resources", "resources/appimage/usr"]
-icon = "resources/assets/vanilla/texture/logo/logo.svg"
-desktop_file = "land.catgirl.engine.desktop"
-startup_wm_class = "land.catgirl.engine"
-args = ["--sign"] # "-u", "gh-releases-zsync|foxgirl-labs|catgirl-engine|latest|*.zsync", "--runtime-file", "$PROJECT_ROOT/.tools/runtime-x86_64"
-auto_link = true
-auto_link_exclude_list = [
-    "libc.so*",
-    "libm.so*",
-    "libgcc*.so*",
-    "ld-linux*.so*",
-    "libpthread.so*",
-    "libdl.so*"
+assets												=	[
+	"target/binding",
+	"target/resources",
+	"resources/appimage/usr"
+]
+icon													=	"resources/assets/vanilla/texture/logo/logo.svg"
+desktop_file									=	"land.catgirl.engine.desktop"
+startup_wm_class							=	"land.catgirl.engine"
+args													=	[
+	"--sign"
+]
+auto_link											=	true
+auto_link_exclude_list				=	[
+	"libc.so*",
+	"libm.so*",
+	"libgcc*.so*",
+	"ld-linux*.so*",
+	"libpthread.so*",
+	"libdl.so*"
 ]
 
+
+#	-----------------------------------------------------------------------------
+#	...
+#	-----------------------------------------------------------------------------
 [package.metadata.wasm-pack.profile.profiling]
-wasm-opt = ['-Oz']
+wasm-opt											=	[
+	'-Oz'
+]
 
-# [package.metadata.wasm-pack.profile.profiling.wasm-bindgen]
-# dwarf-debug-info = true
 
-# Patch in support for #[unsafe(no_mangle)]
+#	-----------------------------------------------------------------------------
+#	...
+#	-----------------------------------------------------------------------------
+#	[package.metadata.wasm-pack.profile.profiling.wasm-bindgen]
+#	dwarf-debug-info						=	true
+
+
+#	-----------------------------------------------------------------------------
+#	Patch in support for #[unsafe(no_mangle)]
+#	-----------------------------------------------------------------------------
 [patch.crates-io]
-cbindgen = { git = "https://github.com/mozilla/cbindgen.git", rev = "b9b8f8878ac272935193c449066b88c0cb94ced2" }
+cbindgen	=	{ git="https://github.com/mozilla/cbindgen.git", rev="b9b8f8878ac272935193c449066b88c0cb94ced2" }
 
+
+#	-----------------------------------------------------------------------------
+#	...
+#	-----------------------------------------------------------------------------
 [build-dependencies]
-toml = { version = "~0.8", default-features = false, features = ["parse"]}
-build-info-build = { version = "~0.0.39", default-features = false, features = ["git"] }
-cc = { version = "~1.2", default-features = false }
-cbindgen = { version = "~0", default-features = false }
-fs_extra = { version = "1.3.0", default-features = false, optional = true}
+toml							=	{ version="~0.8", default-features=false, features=[
+		"parse"
+]}
+build-info-build	=	{ version="~0.0.39", default-features=false, features=[
+		"git"
+]}
+cc								=	{ version="~1.2", default-features=false }
+cbindgen					=	{ version="~0", default-features=false }
+fs_extra					=	{ version="1.3.0", default-features=false, optional=true }
 
+
+#	-----------------------------------------------------------------------------
+#	...
+#	-----------------------------------------------------------------------------
 [dependencies]
-common = { version = "0.14.44", package = "catgirl-engine-common", path = "common" }
-macros = { version = "0.14.44", package = "catgirl-engine-macros", path = "macros" }
-utils = { version = "0.14.44", package = "catgirl-engine-utils", path = "utils" }
-client = { version = "0.14.44", package = "catgirl-engine-client", path = "client", optional = true }
-server = { version = "0.14.44", package = "catgirl-engine-server", path = "server", optional = true }
-serde = { version = "~1.0", default-features = false, features = ["derive"]  }
-serde_json = { version = "~1.0", default-features = false, features = ["alloc"] }
-build-info = { version = "~0.0.39", default-features = false, features = ["runtime"] }
-cfg-if = { version = "~1", default-features = false }
-wasm-bindgen = { version = "0.2.99", default-features = true, features = ["serde", "serde_json"] }
-pretty_env_logger = { version = "~0", default-features = false }
-tracing = { version = "~0.1", default-features = false, features = ["log"] }
-clap = { version = "~4", features = ["derive"] }
+common			=	{ version="0.14.44", package="catgirl-engine-common", path="common" }
+macros			=	{ version="0.14.44", package="catgirl-engine-macros", path="macros" }
+utils				=	{ version="0.14.44", package="catgirl-engine-utils", path="utils" }
+client			=	{ version="0.14.44", package="catgirl-engine-client", path="client", optional=true }
+server			=	{ version="0.14.44", package="catgirl-engine-server", path="server", optional=true }
+serde				=	{ version="~1.0", default-features=false, features=[
+		"derive"
+]}
+serde_json	=	{ version="~1.0", default-features=false, features=[
+		"alloc"
+]}
+build-info	=	{ version="~0.0.39", default-features=false, features=[
+		"runtime"
+]}
+cfg-if			=	{ version="~1", default-features=false }
+wasm-bindgen=	{ version="0.2.99", default-features=true, features=[
+		"serde",
+		"serde_json"
+]}
+pretty_env_logger	=	{ version="~0", default-features=false }
+tracing						=	{ version="~0.1", default-features=false, features=[
+		"log"
+]}
+clap							=	{ version="~4", features=[
+		"derive"
+]}
 
+
+#	-----------------------------------------------------------------------------
+#	...
+#	-----------------------------------------------------------------------------
 [target.'cfg(any(target_family="unix", target_family="windows"))'.dependencies]
-ctrlc = { version = "~3", default-features = false }
+ctrlc	=	{ version="~3", default-features=false }
 
+
+#	-----------------------------------------------------------------------------
+#	...
+#	-----------------------------------------------------------------------------
 [target.'cfg(target_os="android")'.dependencies]
-android_logger = { version = "~0.14", default-features = false }
-winit = { version = "~0.30", default-features = false, features = ["android-game-activity", "serde"] }
+android_logger	=	{ version="~0.14", default-features=false }
+winit						=	{ version="~0.30", default-features=false, features=[
+		"android-game-activity",
+		"serde"
+]}
 
+
+#	-----------------------------------------------------------------------------
+#	...
+#	-----------------------------------------------------------------------------
 [target.'cfg(target_family="wasm")'.dependencies]
-console_error_panic_hook = { version = "~0.1", default-features = false }
-console_log = { version = "~1", default-features = false }
-wasm-bindgen-futures = { version = "~0.4", default-features = false }
-web-sys = { version = "~0.3", default-features = false, features = ["Document", "Window", "Element"] }
-getrandom = { version = "~0.2", default-features = false, features = ["js"] }
-fern = { version = "~0.7", default-features = false }
+console_error_panic_hook	=	{ version="~0.1", default-features=false }
+console_log								=	{ version="~1", default-features=false }
+wasm-bindgen-futures			=	{ version="~0.4", default-features=false }
+web-sys										=	{ version="~0.3", default-features=false, features=[
+		"Document",
+		"Window",
+		"Element"
+]}
+getrandom									=	{ version="~0.2", default-features=false, features=[
+		"js"
+]}
+fern											=	{ version="~0.7", default-features=false }
+
