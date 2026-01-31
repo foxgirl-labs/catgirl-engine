@@ -52,9 +52,11 @@ pub(super) fn get_args() -> Args {
 /// Setup the logger for the current platform
 #[cfg(feature = "logging-subscriber")]
 pub(super) fn setup_logger() {
+//  TODO: Figure out how to alias "verbose" to act as "trace"
+
     if cfg!(target_os = "android") {
-        // Limited Filter: trace,android_activity=debug,winit=debug
-        // Stronger Filter: trace,android_activity=off,winit=off
+//      Limited Filter: trace,android_activity=debug,winit=debug
+//      Stronger Filter: trace,android_activity=off,winit=off
 
         #[cfg(target_os = "android")]
         android_logger::init_once(
@@ -68,7 +70,7 @@ pub(super) fn setup_logger() {
                 ),
         );
     } else if cfg!(target_family = "wasm") {
-        // https://github.com/daboross/fern/issues/134
+//      https://github.com/daboross/fern/issues/134
         #[cfg(target_family = "wasm")]
         if let Err(_error) = fern::Dispatch::new()
             .level(tracing::log::LevelFilter::Off)
@@ -83,13 +85,13 @@ pub(super) fn setup_logger() {
             warn!("Failed to initialize console logger...")
         }
     } else {
-        // windows, unix (which includes Linux, BSD, and OSX), or target_os = "macos"
+//      windows, unix (includes Linux, BSD, OSX), or target_os="macos"
         let mut builder = pretty_env_logger::formatted_builder();
         if let Ok(s) = std::env::var("RUST_LOG") {
-            // Set logger according to RUST_LOG environment variable
+//          Set logger according to RUST_LOG environment variable
             builder.parse_filters(&s);
         } else {
-            // Failed to find RUST_LOG environment variable
+//          Failed to find RUST_LOG environment variable
             builder
                 .default_format()
                 .filter(Some("main"), tracing::log::LevelFilter::Info)
